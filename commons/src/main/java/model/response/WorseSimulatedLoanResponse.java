@@ -1,6 +1,6 @@
 package model.response;
 
-public class WorseSimulatedLoanResponse extends ServerResponse {
+public class worseSimulatedLoanResponse extends ServerResponse {
 	private String message;
 
 	public String getMessage() {
@@ -11,11 +11,11 @@ public class WorseSimulatedLoanResponse extends ServerResponse {
 		this.message = message;
 	}
 
-	public WorseSimulatedLoanResponse(String message) {
+	public worseSimulatedLoanResponse(String message) {
 		super();
 		this.message = message;
 	}
-	public WorseSimulatedLoanResponse() {
+	public worseSimulatedLoanResponse() {
 		// TODO Auto-generated constructor stub
 	}
 

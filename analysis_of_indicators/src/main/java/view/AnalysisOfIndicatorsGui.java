@@ -13,10 +13,12 @@ import javax.swing.table.DefaultTableModel;
 import controler.ProtocoleHandler;
 import model.SessionInformation;
 import model.query.DynamiqueResearchQuery;
+import model.query.RepaymentsQuery;
 import model.response.AverageDurationResponse.AverageClass;
 import model.response.DynamiqueResearchResponse.SumInterest;
+import model.response.RepaymentsResponse;
 import model.response.SumOfInterestResponse.Interest;
-import model.response.EvolutionOfTheSimulationsResponse.ListResult;
+import model.response.evolutionOfTheSimulationsResponse.ListResult;
 import serverCommunication.ServerCommunication;
 
 /*
@@ -92,12 +94,12 @@ public class AnalysisOfIndicatorsGui extends Tab {
 		jLabel2.setText("Selectionnez l'incateur à analyser");
 
 		indicateur.setModel(new javax.swing.DefaultComboBoxModel<>(
-				new String[] { " ", "Somme des intérêts sur un type de prêt","Somme des intérêts à une année", "detail des intérêts perçus","Le type de prêt le plus simulé",
-						"Durée Moyenne des prêts par type de prêt","Évolution mois par mois du nombre de simulation", "Évolution mois par mois du nombre de prêts",
+				new String[] { " ", "Somme des intérêts sur un type de prêt","Total des Empreints / Total des Remboursements","Somme des intérêts à une année", "detail des intérêts perçus","Le type de prêt le plus simulé",
+						"Durée Moyenne des prêts par type de prêt","Évolution mois par mois du nombre de simulation","Évolution mois par mois du nombre de prêts",
 						"Recherche dynamique sur les intérêts", "Le type de prêt le moins simulé" }));
 
 		date.setModel(new javax.swing.DefaultComboBoxModel<>(
-				new String[] { " ","2011","2012","2013", "2014", "2015", "2016", "2016", "2017", "2018" }));
+				new String[] { " ","2011","2012","2013", "2014", "2015", "2016", "2017","2018" }));
 
 		jLabel4.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
 		jLabel4.setForeground(new java.awt.Color(255, 255, 255));
@@ -348,13 +350,20 @@ public class AnalysisOfIndicatorsGui extends Tab {
 				String choix = (String) indicateur.getSelectedItem();
 				// TODO
 			
-				if (choix == "Évolution mois par mois du nombre de prêts") {
+				if (choix =="Évolution mois par mois du nombre de simulation") {
+					labelDate.setForeground(new java.awt.Color(153, 0, 0));
+					labelAge.setForeground(new java.awt.Color(0, 153, 153));
+					LabelPret.setForeground(new java.awt.Color(0, 153, 153));
+			
+				}
+				
+				
+				else if (choix =="Évolution mois par mois du nombre de prêts") {
 					labelDate.setForeground(new java.awt.Color(153, 0, 0));
 					labelAge.setForeground(new java.awt.Color(0, 153, 153));
 					LabelPret.setForeground(new java.awt.Color(0, 153, 153));
 				}
-				
-				if (choix == "Évolution mois par mois du nombre de simulation") {
+				else if(choix=="Total des Empreints / Total des Remboursements"){
 					labelDate.setForeground(new java.awt.Color(153, 0, 0));
 					labelAge.setForeground(new java.awt.Color(0, 153, 153));
 					LabelPret.setForeground(new java.awt.Color(0, 153, 153));
@@ -365,6 +374,11 @@ public class AnalysisOfIndicatorsGui extends Tab {
 					LabelPret.setForeground(new java.awt.Color(153, 0, 0));
 				}
 				else if(choix=="Somme des intérêts à une année"){
+					labelDate.setForeground(new java.awt.Color(153, 0, 0));
+					labelAge.setForeground(new java.awt.Color(0, 153, 153));
+					LabelPret.setForeground(new java.awt.Color(0, 153, 153));
+				}
+				else if(choix=="Total des Empreints / Total des Remboursements"){
 					labelDate.setForeground(new java.awt.Color(153, 0, 0));
 					labelAge.setForeground(new java.awt.Color(0, 153, 153));
 					LabelPret.setForeground(new java.awt.Color(0, 153, 153));
@@ -422,7 +436,10 @@ public class AnalysisOfIndicatorsGui extends Tab {
 					textArea.setFont(new Font("Serif", Font.BOLD, 20));
 					textArea.setText("Le type de prêt le moins simulé dans cette agence est :" + reponse);
 
-				} else if (choix == "detail des intérêts perçus") {
+				} 
+
+
+				else if (choix == "detail des intérêts perçus") {
 
 					ArrayList<Interest> array = new ArrayList<Interest>();
 
@@ -439,7 +456,8 @@ public class AnalysisOfIndicatorsGui extends Tab {
 							t++;
 
 						}
-
+						
+						
 					}
 					textArea.setText("");
 					textArea.setFont(new Font("Serif", Font.BOLD, 20));
@@ -449,7 +467,56 @@ public class AnalysisOfIndicatorsGui extends Tab {
 					}));
 
 				}
+
+			else if (choix =="Total des Empreints / Total des Remboursements"){
+
+					
+					RepaymentsResponse repaymentResponse = new RepaymentsResponse();
+					RepaymentsQuery repaymentQuery = new RepaymentsQuery((String) date.getSelectedItem());
+					repaymentResponse = protocole.getRepayments(socket, repaymentQuery);
+					Object[][] object = new Object[50][50];
 				
+					
+					
+							object[0][0] =date.getSelectedItem();
+							object[0][1] = repaymentResponse.getTotalLoans();
+							object[0][2] = repaymentResponse.getTotalRepayments();
+						
+
+						
+			
+			textArea.setText("");
+		
+		
+			resultatTable.setModel(new DefaultTableModel(object, new String[] { "Résumé de l'année ", "Total des empreints","Total des remboursements"
+
+			}));
+				}
+
+				else if (choix =="Total des Empreints / Total des Remboursements"){
+
+					
+					RepaymentsResponse repaymentResponse = new RepaymentsResponse();
+					RepaymentsQuery repaymentQuery = new RepaymentsQuery((String) date.getSelectedItem());
+					repaymentResponse = protocole.getRepayments(socket, repaymentQuery);
+					Object[][] object = new Object[50][50];
+				
+					
+					
+							object[0][0] =date.getSelectedItem();
+							object[0][1] = repaymentResponse.getTotalLoans();
+							object[0][2] = repaymentResponse.getTotalRepayments();
+						
+
+						
+			
+			textArea.setText("");
+		
+		
+			resultatTable.setModel(new DefaultTableModel(object, new String[] { "Résumé de l'année ", "Total des empreints","Total des remboursements"
+
+			}));
+				}
 				else if (choix == "Somme des intérêts à une année") {
 
 					ArrayList<Interest> array = new ArrayList<Interest>();

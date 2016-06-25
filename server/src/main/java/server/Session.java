@@ -23,11 +23,13 @@ import model.query.GetSimsQuery;
 import model.query.GetValueOfRateQuery;
 import model.query.LoansQuery;
 import model.query.NumberOfLoanQuery;
+import model.query.RepaymentQuery;
 import model.query.SearchAccountsQuery;
 import model.query.SignLoanQuery;
 import model.query.evolutionOfTheSimulationsQuery;
 import model.response.AuthenticationServerResponse;
 import model.response.ErrorServerResponse;
+import model.response.GetRepaymentServerResponse;
 import model.response.ServerResponse;
 import model.response.UnauthorizedErrorServerResponse;
 import util.JsonImpl;
@@ -209,7 +211,7 @@ public class Session extends Thread {
 				break;
 			
 
-///////////////////////////////////////////////////////////////////////Boubacar//////////////////////////////////////////////////////////
+
 
 	case "AverageDuration":
 				if (this.sessionInformation.getAuthorization_level() < 3) {
@@ -305,19 +307,9 @@ public class Session extends Thread {
 
 				break;
 				
-				case "getAllLoanType":
-
-				GetAllLoanTypeQuery loantypequry = JsonImpl.fromJson(content, GetAllLoanTypeQuery.class);
-				System.out.println(loantypequry.toString());
-				try {
-					response = MessageHandler.handleGetAllLoanTypeQuery();
-				} catch (Exception e) {
-				}
-				response = MessageHandler.handleGetAllLoanTypeQuery();
-				break;
 				
 
-/////////////////////////////////////////////////////////////////////////////////// FIN DE MON TRAVAIL////////////////////////////////////
+
 			case "searchAccounts":
 				if (this.sessionInformation.getAuthorization_level() < 2) {
 					return new UnauthorizedErrorServerResponse((this.sessionInformation.getUser_id() == null),
@@ -392,8 +384,16 @@ public class Session extends Thread {
 				response = MessageHandler.handleGetAllAccountQuery();
 				break;
 
+			case "getAllLoanType":
 
-			
+				GetAllLoanTypeQuery loantypequry = JsonImpl.fromJson(content, GetAllLoanTypeQuery.class);
+				System.out.println(loantypequry.toString());
+				try {
+					response = MessageHandler.handleGetAllLoanTypeQuery();
+				} catch (Exception e) {
+				}
+				response = MessageHandler.handleGetAllLoanTypeQuery();
+				break;
 
 			case "GetValueOfRate":
 
@@ -405,7 +405,16 @@ public class Session extends Thread {
 				}
 				response = MessageHandler.handleGetrateQuery();
 				break;
-
+			case "sendRepayment":
+				RepaymentQuery repayment = JsonImpl.fromJson(content,RepaymentQuery.class);
+				System.out.println(repayment.toString());
+				try {
+					response=MessageHandler.handleSendRepaymentQuery(repayment.getRepayments());
+				}catch(Exception e){
+				}
+				response=new GetRepaymentServerResponse();
+				break;
+				
 			case "getCustomers":
 
 				GetCustomersQuery Customerquery = JsonImpl.fromJson(content, GetCustomersQuery.class);

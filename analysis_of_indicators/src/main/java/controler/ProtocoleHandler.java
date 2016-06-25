@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 
 import model.query.DynamiqueResearchQuery;
 import model.query.MustSimulatedLoanQuery;
+import model.query.RepaymentsQuery;
 import model.query.evolutionOfTheSimulationsQuery;
 import model.response.AverageDurationResponse;
 import model.response.AverageDurationResponse.AverageClass;
@@ -17,16 +18,60 @@ import model.response.DynamiqueResearchResponse;
 import model.response.DynamiqueResearchResponse.SumInterest;
 import model.response.MustSimulatedLoanResponse;
 import model.response.NumberOfLoanResponse;
+import model.response.RepaymentsResponse;
+import model.response.RepaymentsResponse.*;
 import model.response.SumOfInterestResponse;
 import model.response.SumOfInterestResponse.Interest;
-import model.response.EvolutionOfTheSimulationsResponse;
-import model.response.EvolutionOfTheSimulationsResponse.ListResult;
-import model.response.WorseSimulatedLoanResponse;
+import model.response.evolutionOfTheSimulationsResponse;
+import model.response.evolutionOfTheSimulationsResponse.ListResult;
+import model.response.worseSimulatedLoanResponse;
 
 
 
 public class ProtocoleHandler {
 	
+	
+	public RepaymentsResponse getRepayments(Socket socket,RepaymentsQuery repaymentsQuery){
+		
+		
+		RepaymentsResponse repayement = new RepaymentsResponse();
+	
+		
+		try{
+
+			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			
+		
+			Gson gson = new Gson();
+			String query = "repayments " + gson.toJson(repaymentsQuery);
+			System.out.print(query);
+		
+			out.println(query);
+
+			
+			// manage the response of the server
+			
+			String response = in.readLine();
+
+
+			int prefixEnd = response.indexOf(' ');
+
+			String prefix = response.substring(0, prefixEnd);
+			
+
+			String content = response.substring(prefixEnd + 1);
+			
+		
+			repayement= gson.fromJson(content, RepaymentsResponse.class);
+		
+			
+		}catch(Exception e){
+			e.toString();
+		}
+		
+		return repayement;
+	}
 	
 	public ArrayList<SumInterest>  InterestBySegment(DynamiqueResearchQuery InterestQuery,Socket socket){
 		ArrayList<SumInterest> array= new ArrayList<SumInterest>();
@@ -248,7 +293,7 @@ public String mustSimulatedLoan(Socket socket){
 
 public String worseSimulatedLoan(Socket socket){
 
- WorseSimulatedLoanResponse evolution = null ;
+ worseSimulatedLoanResponse evolution = null ;
 try{
 	
 
@@ -280,7 +325,7 @@ try{
 	
 
 	 evolution = gson.fromJson(content, 
-			 WorseSimulatedLoanResponse.class);
+			 worseSimulatedLoanResponse.class);
 	 
 	System.out.println(content);
 	
@@ -297,7 +342,7 @@ return evolution.getMessage();
 	// evolution of the simulation year by year
 	public ArrayList<ListResult> evolutionOfTheSimulations(String date,Socket socket){
 
-		 EvolutionOfTheSimulationsResponse evolution = null ;
+		 evolutionOfTheSimulationsResponse evolution = null ;
 		 
 		try{
 			
@@ -330,7 +375,7 @@ return evolution.getMessage();
 			String content = response.substring(prefixEnd + 1);
 			
 		
-			 evolution = gson.fromJson(content, EvolutionOfTheSimulationsResponse.class);
+			 evolution = gson.fromJson(content, evolutionOfTheSimulationsResponse.class);
 			 
 			System.out.println(evolution.toString());
 			
@@ -345,7 +390,7 @@ return evolution.getMessage();
 	
 	public ArrayList<ListResult> evolutionOfTheSimulation(String date,Socket socket){
 
-		 EvolutionOfTheSimulationsResponse evolution = null ;
+		 evolutionOfTheSimulationsResponse evolution = null ;
 		 
 		try{
 			
@@ -378,7 +423,7 @@ return evolution.getMessage();
 			String content = response.substring(prefixEnd + 1);
 			
 		
-			 evolution = gson.fromJson(content, EvolutionOfTheSimulationsResponse.class);
+			 evolution = gson.fromJson(content, evolutionOfTheSimulationsResponse.class);
 			System.out.println(evolution.toString());
 			
 		}catch(Exception e){
